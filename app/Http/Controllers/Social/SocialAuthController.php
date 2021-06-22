@@ -10,41 +10,43 @@ use App\Http\Controllers\Controller;
 use App\Mail\PasswordSent;
 use Illuminate\Http\Request;
 use App\Models\User;
+use JWTAuth;
 class SocialAuthController extends Controller
 {
+    private function createOrLoginUser($user)
+    {
+        $token=null;
+        if(User::where('email',$user->email)->get()->count()==1)
+        {
+            $user=User::where('email',$user->email)->firstOrFail();
+            return JWTAuth::fromUser($user);
+        }
+
+        $password=Str::random(24);
+        $user=User::create([
+            'name'=>$user->name,
+            'email'=>$user->email,
+            'password'=>Hash::make($password),
+        ]);
+
+        Mail::to($user)->send(new PasswordSent($password));
+        return JWTAuth::fromUser($user);
+
+    }
+    
     public function github()
     {
         return Socialite::driver('github')->stateless()->redirect();
     } 
-
+    
     public function githubRedirect()
     {
         $user=Socialite::driver('github')->stateless()->user();
-
-        if(User::where('email',$user->email)->get()->count()==1)
-        {
-            return response()->json([
-            "status"=>0,
-            "message"=>"Account Already created",
-        ]);
-        }
-
-        $password=Str::random(24);
-        $user=User::firstOrCreate([
-            'email'=>$user->email
-        ],
-        [
-            'name'=>$user->name,
-            'email'=>$user->email,
-            'password'=>Hash::make($password),
-
-        ]);
-
-        Mail::to($user)->send(new PasswordSent($password));
-
+        $token=$this->createOrLoginUser($user);
         return response()->json([
             "status"=>0,
             "message"=>"Account created successfully and the password has been sent to your mail id",
+            "token"=>$token,
         ]);
     }
 }

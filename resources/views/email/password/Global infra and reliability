@@ -1,0 +1,44 @@
+Aws global infrastrucure
+
+Aws regions
+->Regions-Aws builds regions throughout the world
+->each region consists of sub centers connected by high speed fibres
+->we can choose a region we require,and our data never leaves the region without explicit permission.
+
+Choosing a region
+->compliance
+->proximity
+->feature availability
+->pricing
+
+Availabilty Zone(AZ)->one or mare data centers inside a region
+
+What happens in case of a disater?
+->run multiple ec2 instances in different regions of AZ's.
+
+Edge Locations
+
+Caching copy of the data at proximate locations
+->CDN amazon cloud front-helps deliver data with low latency.
+->ACF-edge locations-seperate from regions-pushed data from regions.
+->Amazon route 53-dns service on edge location.
+->Aws outpost region within your own premise.
+
+How to provision Aws resources
+
+->API's in AWS everything is an api.
+->AWS management console is browser based
+->AWS commandline interface
+->AWS SDK's
+->various other tools
+
+Automated management tools
+->Elastic bean stalk
+->amazon ec2 based environemnts-automate loadbalancing,scaling etc.
+->just need to provide the application code and set configurations for the been stalk.
+
+->Aws cloud formation
+->infrastructure as code tool
+->define wide varietey of resources using json or yaml(cloud formation template).
+
+
