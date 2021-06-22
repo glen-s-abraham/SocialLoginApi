@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Social;
 
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
@@ -13,23 +12,19 @@ use App\Models\User;
 use JWTAuth;
 class SocialAuthController extends Controller
 {
+    
     private function createOrLoginUser($user)
     {
-        $token=null;
         if(User::where('email',$user->email)->get()->count()==1)
         {
             $user=User::where('email',$user->email)->firstOrFail();
             return JWTAuth::fromUser($user);
         }
-
-        $password=Str::random(24);
         $user=User::create([
             'name'=>$user->name,
             'email'=>$user->email,
-            'password'=>Hash::make($password),
+            'password'=>Hash::make(Str::random(24)),
         ]);
-
-        Mail::to($user)->send(new PasswordSent($password));
         return JWTAuth::fromUser($user);
 
     }
